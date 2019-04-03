@@ -54,6 +54,16 @@ HEARTBEAT_STRING_LIST = codecs.encode(HEARTBEAT_SOURCE_STRING, "rot13").split(
     "\n"
 )
 
+DEFAULT_HEADERS = {
+    "X-Frame-Options": "(^allow-form https?://([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*(:\d+)?$|^deny$|^sameorigin$)",  # noqa: E501
+    "Referrer-Policy": "(^no-referrer$|^no-referrer-when-downgrade$|^origin|origin-when-cross-origin$|^same-origin|strict-origin$|^strict-origin-when-cross-origin$|^unsafe-url$)",  # noqa: E501
+    "Access-Control-Allow-Origin": "(^\*$|^null$|^https?://([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*(:\d+)?$)",  # noqa: E501
+    "X-Content-Type-Options": "(^nosniff$)",  # noqa: E501
+    "Content-Security-Policy": '[a-zA-Z0-9:;/''"\*\- ]+',  # noqa: E501
+    "X-Permitted-Cross-Domain-Policies": "(^all$|^none$|^master-only$|^by-content-type$|^by-ftp-filename$)",  # noqa: E501
+    "X-XSS-Protection": "(^0$|^1$|^1; mode=block$|^1; report=https?://([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*(:\d+)?$)",  # noqa: E501
+}
+
 logger.setLevel(buildpackutil.get_buildpack_loglevel())
 
 
@@ -162,13 +172,41 @@ def get_m2ee_password():
     return m2ee_password
 
 
+def parse_header():
+    header_config = ""
+    headers_from_json = {}
+
+    x_frame_options = os.environ.get("X_FRAME_OPTIONS", "ALLOW")
+    if x_frame_options != "ALLOW":
+        headers_from_json["X-Frame-Options"] = x_frame_options
+
+    headers_json = os.environ.get(
+        "HTTP_RESPONSE_HEADERS", "{}"
+    )
+
+    try:
+        headers_from_json.update(json.loads(headers_json))
+    except Exception as e:
+        logger.warning(
+            "Failed to parse HTTP_RESPONSE_HEADERS, due to invalid JSON.",
+            exc_info=True,
+        )
+        raise
+
+    for header_key, header_value in headers_from_json.items():
+        regEx = DEFAULT_HEADERS[header_key]
+        if regEx and re.match(regEx, header_value):
+            header_config += "add_header {} '{}';\n".format(header_key, header_value)
+            logger.debug("Added header {} to nginx config".format(header_key))
+        else:
+            logger.debug("Skipping {} config, since its not valid".format(header_key))
+
+    return header_config
+
+
 def set_up_nginx_files(m2ee):
     lines = ""
-    x_frame_options = os.environ.get("X_FRAME_OPTIONS", "ALLOW")
-    if x_frame_options == "ALLOW":
-        x_frame_options = ""
-    else:
-        x_frame_options = "add_header X-Frame-Options '%s';" % x_frame_options
+
     if use_instadeploy(m2ee.config.get_runtime_version()):
         mxbuild_upstream = "proxy_pass http://mendix_mxbuild"
     else:
@@ -182,7 +220,7 @@ def set_up_nginx_files(m2ee):
         .replace("ADMIN_PORT", str(get_admin_port()))
         .replace("DEPLOY_PORT", str(get_deploy_port()))
         .replace("ROOT", os.getcwd())
-        .replace("XFRAMEOPTIONS", x_frame_options)
+        .replace("HTTP_HEADERS", parse_header())
         .replace("MXBUILD_UPSTREAM", mxbuild_upstream)
     )
     for line in lines.split("\n"):
