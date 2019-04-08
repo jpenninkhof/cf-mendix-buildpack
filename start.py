@@ -196,7 +196,7 @@ def parse_header():
     for header_key, header_value in headers_from_json.items():
         regEx = DEFAULT_HEADERS[header_key]
         if regEx and re.match(regEx, header_value):
-            header_value.replace('"', '\\"').replace("'", "\'")
+            header_value.replace('"', '\\"').replace("'", "\\'")
             header_config += "add_header {} '{}';\n".format(header_key, header_value)
             logger.debug("Added header {} to nginx config".format(header_key))
         else:
