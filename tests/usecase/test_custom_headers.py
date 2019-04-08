@@ -6,10 +6,10 @@ import json
 
 class TestCaseCustomHeaderConfig(unittest.TestCase):
     def test_valid_header_xfrmaeOption(self):
-        os.environ["HTTP_RESPONSE_HEADERS"] = '{"X-Frame-Options": "allow-form https://mendix.com"}'
+        os.environ["HTTP_RESPONSE_HEADERS"] = '{"X-Frame-Options": "allow-from https://mendix.com"}'
         os.environ["X_FRAME_OPTIONS"] = 'deny'
         header_config = start.parse_header()
-        assert "add_header X-Frame-Options 'allow-form https://mendix.com';" in header_config
+        assert "add_header X-Frame-Options 'allow-from https://mendix.com';" in header_config
 
     def test_invalid_header_xframeOption(self):
         os.environ["HTTP_RESPONSE_HEADERS"] = '{"X-Frame-Options": "allow-form htps://mendix.com"}'
@@ -53,9 +53,9 @@ class TestCaseCustomHeaderConfig(unittest.TestCase):
         assert "" in header_config
 
     def test_valid_header_contentSecurity(self):
-        os.environ["HTTP_RESPONSE_HEADERS"] = '{"Content-Security-Policy": "default-src self : script-src https://my.csp.domain.amsterdam"}'   # noqa: E501
+        os.environ["HTTP_RESPONSE_HEADERS"] = '{"Content-Security-Policy":"default-src https: \u0027unsafe-eval\u0027 \u0027unsafe-inline\u0027; object-src \u0027none\u0027"}'   # noqa: E501
         header_config = start.parse_header()
-        assert "add_header Content-Security-Policy 'default-src self : script-src https://my.csp.domain.amsterdam';" in header_config   # noqa: E501
+        assert "add_header Content-Security-Policy 'default-src https: \'unsafe-eval\' \'unsafe-inline\'; object-src \'none\'';" in header_config   # noqa: E501
 
     def test_invalid_header_contentSecurity(self):
         os.environ["HTTP_RESPONSE_HEADERS"] = '{"Content-Security-Policy": "$# default-src https://my.csp.domain.amsterdam"}'   # noqa: E501
