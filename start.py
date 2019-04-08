@@ -55,11 +55,11 @@ HEARTBEAT_STRING_LIST = codecs.encode(HEARTBEAT_SOURCE_STRING, "rot13").split(
 )
 
 DEFAULT_HEADERS = {
-    "X-Frame-Options": "(^allow-form https?://([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*(:\d+)?$|^deny$|^sameorigin$)",  # noqa: E501
+    "X-Frame-Options": "(^allow-from https?://([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*(:\d+)?$|^deny$|^sameorigin$)",  # noqa: E501
     "Referrer-Policy": "(^no-referrer$|^no-referrer-when-downgrade$|^origin|origin-when-cross-origin$|^same-origin|strict-origin$|^strict-origin-when-cross-origin$|^unsafe-url$)",  # noqa: E501
     "Access-Control-Allow-Origin": "(^\*$|^null$|^https?://([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*(:\d+)?$)",  # noqa: E501
     "X-Content-Type-Options": "(^nosniff$)",  # noqa: E501
-    "Content-Security-Policy": '[a-zA-Z0-9:;/''"\*\- ]+',  # noqa: E501
+    "Content-Security-Policy": '[a-zA-Z0-9:;/''"\.\*\- ]+',  # noqa: E501
     "X-Permitted-Cross-Domain-Policies": "(^all$|^none$|^master-only$|^by-content-type$|^by-ftp-filename$)",  # noqa: E501
     "X-XSS-Protection": "(^0$|^1$|^1; mode=block$|^1; report=https?://([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*(:\d+)?$)",  # noqa: E501
 }
@@ -199,7 +199,7 @@ def parse_header():
             header_config += "add_header {} '{}';\n".format(header_key, header_value)
             logger.debug("Added header {} to nginx config".format(header_key))
         else:
-            logger.debug("Skipping {} config, since its not valid".format(header_key))
+            logger.debug("Skipping {} config, value '{}' is not valid".format(header_key, header_value))
 
     return header_config
 
