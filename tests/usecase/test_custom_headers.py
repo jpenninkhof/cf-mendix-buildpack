@@ -18,7 +18,7 @@ class TestCaseCustomHeaderConfig(unittest.TestCase):
 
     def test_valid_with_xframeOption(self):
         os.environ["HTTP_RESPONSE_HEADERS"] = '{}'
-        os.environ["X_FRAME_OPTIONS"] = 'deny'
+        os.environ["X_FRAME_OPTIONS"] = 'DENY'
         header_config = start.parse_header()
         assert "add_header X-Frame-Options 'deny';" in header_config
 
@@ -55,7 +55,6 @@ class TestCaseCustomHeaderConfig(unittest.TestCase):
     def test_valid_header_contentSecurity(self):
         os.environ["HTTP_RESPONSE_HEADERS"] = '{"Content-Security-Policy":"default-src https: \u0027unsafe-eval\u0027 \u0027unsafe-inline\u0027; object-src \u0027none\u0027"}'   # noqa: E501
         header_config = start.parse_header()
-        print(header_config)
         assert "add_header Content-Security-Policy 'default-src https: \\'unsafe-eval\\' \\'unsafe-inline\\'; object-src \\'none\\'';" in header_config   # noqa: E501
 
     def test_invalid_header_contentSecurity(self):

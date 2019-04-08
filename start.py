@@ -178,7 +178,7 @@ def parse_header():
 
     x_frame_options = os.environ.get("X_FRAME_OPTIONS", "ALLOW")
     if x_frame_options != "ALLOW":
-        headers_from_json["X-Frame-Options"] = x_frame_options
+        headers_from_json["X-Frame-Options"] = x_frame_options.lower()
 
     headers_json = os.environ.get(
         "HTTP_RESPONSE_HEADERS", "{}"
