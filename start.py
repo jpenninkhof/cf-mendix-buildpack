@@ -59,7 +59,7 @@ DEFAULT_HEADERS = {
     "Referrer-Policy": "(^no-referrer$|^no-referrer-when-downgrade$|^origin|origin-when-cross-origin$|^same-origin|strict-origin$|^strict-origin-when-cross-origin$|^unsafe-url$)",  # noqa: E501
     "Access-Control-Allow-Origin": "(^\*$|^null$|^https?://([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*(:\d+)?$)",  # noqa: E501
     "X-Content-Type-Options": "(^nosniff$)",  # noqa: E501
-    "Content-Security-Policy": '[a-zA-Z0-9:;/''"\.\*\- ]+',  # noqa: E501
+    "Content-Security-Policy": "[a-zA-Z0-9:;/''\"\*_\- \.\n?=%&]+",  # noqa: E501
     "X-Permitted-Cross-Domain-Policies": "(^all$|^none$|^master-only$|^by-content-type$|^by-ftp-filename$)",  # noqa: E501
     "X-XSS-Protection": "(^0$|^1$|^1; mode=block$|^1; report=https?://([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])(\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]{0,61}[a-zA-Z0-9]))*(:\d+)?$)",  # noqa: E501
 }
@@ -180,9 +180,7 @@ def parse_header():
     if x_frame_options != "ALLOW":
         headers_from_json["X-Frame-Options"] = x_frame_options.lower()
 
-    headers_json = os.environ.get(
-        "HTTP_RESPONSE_HEADERS", "{}"
-    )
+    headers_json = os.environ.get("HTTP_RESPONSE_HEADERS", "{}")
 
     try:
         headers_from_json.update(json.loads(headers_json))
@@ -196,11 +194,19 @@ def parse_header():
     for header_key, header_value in headers_from_json.items():
         regEx = DEFAULT_HEADERS[header_key]
         if regEx and re.match(regEx, header_value):
-            escaped_value = header_value.replace('"', '\\"').replace("'", "\\'")
-            header_config += "add_header {} '{}';\n".format(header_key, escaped_value)
+            escaped_value = header_value.replace('"', '\\"').replace(
+                "'", "\\'"
+            )
+            header_config += "add_header {} '{}';\n\t".format(
+                header_key, escaped_value
+            )
             logger.debug("Added header {} to nginx config".format(header_key))
         else:
-            logger.debug("Skipping {} config, value '{}' is not valid".format(header_key, header_value))
+            logger.debug(
+                "Skipping {} config, value '{}' is not valid".format(
+                    header_key, header_value
+                )
+            )
 
     return header_config
 
