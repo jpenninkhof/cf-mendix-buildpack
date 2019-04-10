@@ -16,12 +16,11 @@ class TestCaseBuildPackCustomHeaderConfig(basetest.BaseTest):
 
     def test_custom_header_settings(self):
         self.setUpCF(
-            "sample-6.2.0.mda",
+            "BuildpackTestApp-mx-7-16.mda",
             env_vars={
-                "X_FRAME_OPTIONS": "DENY",
+                "X_FRAME_OPTIONS": "deny",
                 "HTTP_RESPONSE_HEADERS": json.dumps(
                     {
-                        "X-Frame-Options": "SAMEORIGIN",
                         "X-Permitted-Cross-Domain-Policies": "by-content-type",
                         "Access-Control-Allow-Origin": "https://this.is.mydomain.nl",
                         "X-XSS-Protection": "1; report=https://domainwithnewstyle.tld.consultancy",
@@ -34,17 +33,17 @@ class TestCaseBuildPackCustomHeaderConfig(basetest.BaseTest):
 
         response = self._httpget()
 
-        assert "sameorigin" in response.headers["x-frame-options"]
+        assert "deny" in response.headers["X-Frame-Options"]
         assert (
             "https://this.is.mydomain.nl"
-            in response.headers["access-control-allow-origin"]
+            in response.headers["Access-Control-Allow-Origin"]
         )
-        assert "nosniff" in response.headers["x-content-type-options"]
+        assert "nosniff" in response.headers["X-Content-Type-Options"]
         assert (
             "by-content-type"
-            in response.headers["x-permitted-cross-domain-policies"]
+            in response.headers["X-Permitted-Cross-Domain-Policies"]
         )
         assert (
             "1; report=https://domainwithnewstyle.tld.consultancy"
-            in response.headers["x-xss-protection"]
+            in response.headers["X-XSS-Protection"]
         )
