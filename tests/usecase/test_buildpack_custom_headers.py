@@ -21,7 +21,7 @@ class TestCaseBuildPackCustomHeaderConfig(basetest.BaseTest):
                 "X_FRAME_OPTIONS": "DENY",
                 "HTTP_RESPONSE_HEADERS": json.dumps(
                     {
-                        "X-Frame-Options": "SAMEORIGN",
+                        "X-Frame-Options": "SAMEORIGIN",
                         "X-Permitted-Cross-Domain-Policies": "by-content-type",
                         "Access-Control-Allow-Origin": "https://this.is.mydomain.nl",
                         "X-XSS-Protection": "1; report=https://domainwithnewstyle.tld.consultancy",
@@ -34,7 +34,7 @@ class TestCaseBuildPackCustomHeaderConfig(basetest.BaseTest):
 
         response = self._httpget()
 
-        assert "SAMEORIGN" in response.headers["X-Frame-Options"]
+        assert "SAMEORIGIN" in response.headers["X-Frame-Options"]
         assert (
             "https://this.is.mydomain.nl"
             in response.headers["Access-Control-Allow-Origin"]

@@ -84,7 +84,7 @@ class TestCaseCustomHeaderConfig(unittest.TestCase):
         assert (
             "add_header Content-Security-Policy 'default-src https: \\'unsafe-eval\\' \\'unsafe-inline\\'; object-src \\'none\\'';"  # noqa: E501
             in header_config
-        )  # noqa: E501
+        )
 
     def test_invalid_header_contentSecurity(self):
         os.environ["HTTP_RESPONSE_HEADERS"] = json.dumps(
