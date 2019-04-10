@@ -1,5 +1,6 @@
 import basetest
 import requests
+import json
 
 
 class TestCaseBuildPackCustomHeaderConfig(basetest.BaseTest):
@@ -17,15 +18,23 @@ class TestCaseBuildPackCustomHeaderConfig(basetest.BaseTest):
         self.setUpCF(
             "sample-6.2.0.mda",
             env_vars={
-                "X_FRAME_OPTIONS": "deny",
-                "HTTP_RESPONSE_HEADERS": '{"X-Permitted-Cross-Domain-Policies": "by-content-type","Access-Control-Allow-Origin": "https://this.is.mydomain.nl","X-XSS-Protection": "1; report=https://domainwithnewstyle.tld.consultancy","X-Content-Type-Options": "nosniff"}',  # noqa: E501
+                "X_FRAME_OPTIONS": "DENY",
+                "HTTP_RESPONSE_HEADERS": json.dumps(
+                    {
+                        "X-Frame-Options": "SAMEORIGN",
+                        "X-Permitted-Cross-Domain-Policies": "by-content-type",
+                        "Access-Control-Allow-Origin": "https://this.is.mydomain.nl",
+                        "X-XSS-Protection": "1; report=https://domainwithnewstyle.tld.consultancy",
+                        "X-Content-Type-Options": "nosniff",
+                    }
+                ),
             },
         )
         self.startApp()
 
         response = self._httpget()
 
-        assert "deny" in response.headers["X-Frame-Options"]
+        assert "SAMEORIGN" in response.headers["X-Frame-Options"]
         assert (
             "https://this.is.mydomain.nl"
             in response.headers["Access-Control-Allow-Origin"]

@@ -148,7 +148,7 @@ If the setting contains a dot `.` you can use an underscore `_` in the environme
 
 ### Configuring HTTP headers
 
-HTTP headers allow the client and the server to pass additional information with the request or the response which defines the operating parameters of an HTTP transaction. Few of the response headers can be configured via `HTTP_RESPONSE_HEADERS` environment variable and setting a JSON string value to configure multiple supported headers. See [Section 4.2](https://docs.mendix.com/developerportal/deploy/environments-details) for all supported headers and options.
+HTTP headers allow the client and the server to pass additional information with the request or the response which defines the operating parameters of an HTTP transaction. Few of the response headers can be configured via `HTTP_RESPONSE_HEADERS` environment variable and setting a JSON string value to configure multiple supported headers. See [Environment Details - Developer Portal Guide | Mendix Documentation Section 4.2](https://docs.mendix.com/developerportal/deploy/environments-details) for all supported headers and options.
 
 For example, to configure `X-Frame-Options`, you can set `HTTP_RESPONSE_HEADERS` environment variable like below:
 
