@@ -34,7 +34,7 @@ class TestCaseBuildPackCustomHeaderConfig(basetest.BaseTest):
 
         response = self._httpget()
 
-        assert "SAMEORIGIN" in response.headers["x-frame-options"]
+        assert "sameorigin" in response.headers["x-frame-options"]
         assert (
             "https://this.is.mydomain.nl"
             in response.headers["access-control-allow-origin"]
