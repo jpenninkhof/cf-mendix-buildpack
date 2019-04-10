@@ -34,17 +34,17 @@ class TestCaseBuildPackCustomHeaderConfig(basetest.BaseTest):
 
         response = self._httpget()
 
-        assert "SAMEORIGIN" in response.headers["X-Frame-Options"]
+        assert "SAMEORIGIN" in response.headers["x-frame-options"]
         assert (
             "https://this.is.mydomain.nl"
-            in response.headers["Access-Control-Allow-Origin"]
+            in response.headers["access-control-allow-origin"]
         )
-        assert "nosniff" in response.headers["X-Content-Type-Options"]
+        assert "nosniff" in response.headers["x-content-type-options"]
         assert (
             "by-content-type"
-            in response.headers["X-Permitted-Cross-Domain-Policies"]
+            in response.headers["x-permitted-cross-domain-policies"]
         )
         assert (
             "1; report=https://domainwithnewstyle.tld.consultancy"
-            in response.headers["X-XSS-Protection"]
+            in response.headers["x-xss-protection"]
         )
