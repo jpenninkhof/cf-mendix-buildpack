@@ -6,19 +6,10 @@ import json
 class TestCaseBuildPackCustomHeaderConfig(basetest.BaseTest):
     def setUp(self):
         super().setUp()
-
-    def _httpget(self):
-        try:
-            response = requests.get("https://" + self.app_name)
-        except Exception as e:
-            print("Failed to get request got {}".format(requests.status_code))
-        return response
-
-    def test_custom_header_settings(self):
         self.setUpCF(
             "BuildpackTestApp-mx-7-16.mda",
             env_vars={
-                "X_FRAME_OPTIONS": "deny",
+                "X_FRAME_OPTIONS": "DENY",
                 "HTTP_RESPONSE_HEADERS": json.dumps(
                     {
                         "X-Permitted-Cross-Domain-Policies": "by-content-type",
@@ -31,9 +22,15 @@ class TestCaseBuildPackCustomHeaderConfig(basetest.BaseTest):
         )
         self.startApp()
 
-        response = self._httpget()
+    def _httpget(self):
+        full_uri = "https://" + self.app_name + "/favicon.ico"
+        response = requests.get(full_uri)
+        return response
 
-        assert "deny" in response.headers["X-Frame-Options"]
+    def test_custom_header_settings(self):
+        self.assert_app_running()
+        response = self._httpget()
+        assert "DENY" in response.headers["X-Frame-Options"]
         assert (
             "https://this.is.mydomain.nl"
             in response.headers["Access-Control-Allow-Origin"]
