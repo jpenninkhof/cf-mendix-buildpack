@@ -225,7 +225,7 @@ def set_up_nginx_files(m2ee):
         lines = "".join(fh.readlines())
     http_headers = parse_headers()
     lines = (
-        lines.replace("CONFIG", get_path_config(http_headers))
+        lines.replace("CONFIG", get_path_config())
         .replace("NGINX_PORT", str(get_nginx_port()))
         .replace("RUNTIME_PORT", str(get_runtime_port()))
         .replace("ADMIN_PORT", str(get_admin_port()))

@@ -20,7 +20,7 @@ def gen_htpasswd(users_passwords, file_name_suffix=""):
                 )
 
 
-def get_path_config(http_headers=""):
+def get_path_config():
     """
     Example for ACCESS_RESTRICTIONS
     {
@@ -51,7 +51,7 @@ location %s {
             expires 1y;
     }
     if ($request_uri ~ ^/((index[\w-]*|login)\.html)?$) {
-            {}
+            HTTP_HEADERS
             add_header Cache-Control "no-cache";
     }
     proxy_pass http://mendix;
@@ -61,9 +61,7 @@ satisfy %s;
 %s
 %s
 %s
-""".format(
-        http_headers
-    )
+"""
 
     restrictions = json.loads(os.environ.get("ACCESS_RESTRICTIONS", "{}"))
     if "/" not in restrictions:
