@@ -51,7 +51,6 @@ location %s {
             expires 1y;
     }
     if ($request_uri ~ ^/((index[\w-]*|login)\.html)?$) {
-            http_headers
             add_header Cache-Control "no-cache";
     }
     proxy_pass http://mendix;
