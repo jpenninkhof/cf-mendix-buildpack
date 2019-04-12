@@ -23,7 +23,7 @@ class TestCaseBuildPackCustomHeaderConfig(basetest.BaseTest):
         self.startApp()
 
     def _httpget(self):
-        full_uri = "https://" + self.app_name + "/favicon.ico"
+        full_uri = "https://" + self.app_name
         response = requests.get(full_uri)
         return response
 

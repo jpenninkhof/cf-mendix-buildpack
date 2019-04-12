@@ -223,14 +223,15 @@ def set_up_nginx_files(m2ee):
         mxbuild_upstream = "return 501"
     with open("nginx/conf/nginx.conf") as fh:
         lines = "".join(fh.readlines())
+    http_headers = parse_headers()
     lines = (
-        lines.replace("CONFIG", get_path_config())
+        lines.replace("CONFIG", get_path_config(http_headers))
         .replace("NGINX_PORT", str(get_nginx_port()))
         .replace("RUNTIME_PORT", str(get_runtime_port()))
         .replace("ADMIN_PORT", str(get_admin_port()))
         .replace("DEPLOY_PORT", str(get_deploy_port()))
         .replace("ROOT", os.getcwd())
-        .replace("HTTP_HEADERS", parse_headers())
+        .replace("HTTP_HEADERS", http_headers)
         .replace("MXBUILD_UPSTREAM", mxbuild_upstream)
     )
     for line in lines.split("\n"):

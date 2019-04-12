@@ -20,7 +20,7 @@ def gen_htpasswd(users_passwords, file_name_suffix=""):
                 )
 
 
-def get_path_config():
+def get_path_config(http_headers=""):
     """
     Example for ACCESS_RESTRICTIONS
     {
@@ -49,6 +49,10 @@ location %s {
 location %s {
     if ($request_uri ~ ^/(.*\.(css|js)|forms/.*|img/.*|pages/.*)\?[0-9]+$) {
             expires 1y;
+    }
+    if ($request_uri ~ ^/((index[\w-]*|login)\.html)?$) {
+            http_headers
+            add_header Cache-Control "no-cache";
     }
     proxy_pass http://mendix;
 }
