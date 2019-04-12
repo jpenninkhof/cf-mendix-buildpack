@@ -200,7 +200,7 @@ def parse_headers():
             escaped_value = header_value.replace('"', '\\"').replace(
                 "'", "\\'"
             )
-            header_config += "add_header {} '{}';\n\t".format(
+            header_config += "add_header {} '{}';\n".format(
                 header_key, escaped_value
             )
             logger.debug("Added header {} to nginx config".format(header_key))
